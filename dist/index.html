@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Input Example</title>
+</head>
+<body>
+
+<!-- 1. json 파일을 올리고 json 파일로 다운로드 받게 한다. -->
+<input type="file" id="fileInput" accept=".json">
+<button onclick="loadFile()">Load JSON</button>
+
+<!-- 2. targetText를 직접 입력할 수 있는 input 태그 -->
+<label for="targetTextInput">Enter target text:</label>
+<input type="text" id="targetTextInput" value="Mr.Chu">
+
+<!-- 3. glyphs 속성에 폰트들 중 targetText만 추출하여 json 파일로 다운로드 -->
+<button onclick="downloadModifiedJson()">Download Modified JSON</button>
+
+<script>
+function loadFile() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const fontData = JSON.parse(e.target.result);
+
+            // 2. targetText를 직접 입력할 수 있는 input 태그에서 가져오기
+            const targetText = document.getElementById('targetTextInput').value;
+
+            // 3. glyphs 속성에 폰트들 중 targetText만 추출
+            const modifiedGlyphs = {};
+            for (const char of targetText) {
+                const upperChar = char.toUpperCase();
+                if (upperChar in fontData.glyphs) {
+                    modifiedGlyphs[upperChar] = fontData.glyphs[upperChar];
+                }
+            }
+
+            // 4. glyphs 속성 이외의 다른 속성들은 그대로 유지하며 json 파일로 만들기
+            const modifiedFontData = {
+                ...fontData,
+                glyphs: modifiedGlyphs
+            };
+
+            // json 파일 다운로드
+            downloadJson(modifiedFontData, 'modifiedFontData.json');
+        };
+
+        reader.readAsText(file);
+    } else {
+        alert('파일을 선택해주세요.');
+    }
+}
+
+function downloadJson(data, filename) {
+    const jsonData = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// 3. glyphs 속성에 폰트들 중 targetText만 추출하여 json 파일로 다운로드하는 함수
+function downloadModifiedJson() {
+    const targetText = document.getElementById('targetTextInput').value;
+    const modifiedGlyphs = {};
+
+    for (const char of targetText) {
+        const upperChar = char.toUpperCase();
+        if (upperChar in fontData.glyphs) {
+            modifiedGlyphs[upperChar] = fontData.glyphs[upperChar];
+        }
+    }
+
+    const modifiedFontData = {
+        glyphs: modifiedGlyphs
+    };
+
+    // json 파일 다운로드
+    downloadJson(modifiedFontData, 'modifiedGlyphs.json');
+}
+</script>
+
+</body>
+</html>

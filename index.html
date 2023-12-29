@@ -44,7 +44,8 @@ function loadFile() {
 
             // 3. glyphs 속성에 폰트들 중 targetText만 추출
             const modifiedGlyphs = {};
-            for (const char of targetText) {
+            for (let i = 0; i < targetText.length; i++) {
+                const char = targetText[i];
                 const charKey = char in fontData.glyphs ? char : char.toUpperCase();
                 if (charKey in fontData.glyphs) {
                     modifiedGlyphs[charKey] = fontData.glyphs[charKey];

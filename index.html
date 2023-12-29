@@ -3,24 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Input Example</title>
+    <title>Font Json Optimization</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
+    <main>
+        <h1>Font Json Optimization</h1>
+        <ul>
+            <li>
+                <input type="file" id="fileInput" accept=".json">
+                
+            </li>
+            <li>
+                <label for="targetTextInput">Enter target text:</label>
+                <input type="text" id="targetTextInput" value="Mr.Chu">
+            </li>
+            <li>
+                <button onclick="loadFile()">Download Modified JSON</button>
+            </li>
+        </ul>
+        <textarea id="data-area" width="100%" rows="5">
 
-<!-- 1. json 파일을 올리고 json 파일로 다운로드 받게 한다. -->
-<input type="file" id="fileInput" accept=".json">
-<button onclick="loadFile()">Load JSON</button>
-
-<!-- 2. targetText를 직접 입력할 수 있는 input 태그 -->
-<label for="targetTextInput">Enter target text:</label>
-<input type="text" id="targetTextInput" value="Mr.Chu">
-
-<!-- 3. glyphs 속성에 폰트들 중 targetText만 추출하여 json 파일로 다운로드 -->
-<button onclick="downloadModifiedJson()">Download Modified JSON</button>
+        </textarea>
+    </main>
 
 <script>
 function loadFile() {
     const fileInput = document.getElementById('fileInput');
+    const fileModifed = document.getElementById('data-area');
     const file = fileInput.files[0];
 
     if (file) {
@@ -47,13 +57,16 @@ function loadFile() {
                 glyphs: modifiedGlyphs
             };
 
-            // json 파일 다운로드
+            fileModifed.innerText = JSON.stringify(modifiedFontData);
+
             downloadJson(modifiedFontData, 'modifiedFontData.json');
         };
 
         reader.readAsText(file);
+
+
     } else {
-        alert('파일을 선택해주세요.');
+        alert('please choose file');
     }
 }
 
@@ -71,25 +84,6 @@ function downloadJson(data, filename) {
     URL.revokeObjectURL(url);
 }
 
-// 3. glyphs 속성에 폰트들 중 targetText만 추출하여 json 파일로 다운로드하는 함수
-function downloadModifiedJson() {
-    const targetText = document.getElementById('targetTextInput').value;
-    const modifiedGlyphs = {};
-
-    for (const char of targetText) {
-        const charKey = char in fontData.glyphs ? char : char.toUpperCase();
-        if (charKey in fontData.glyphs) {
-            modifiedGlyphs[charKey] = fontData.glyphs[charKey];
-        }
-    }
-
-    const modifiedFontData = {
-        glyphs: modifiedGlyphs
-    };
-
-    // json 파일 다운로드
-    downloadJson(modifiedFontData, 'modifiedGlyphs.json');
-}
 </script>
 
 </body>

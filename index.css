@@ -1,0 +1,23 @@
+body,html{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+main{
+    max-width: 1024px;
+    width: 100%;
+}
+
+h1{
+    font-size: 25px;
+}
+
+ul{
+    
+}
+
+li:not(:last-of-type){
+    margin-bottom: 10px;
+}
